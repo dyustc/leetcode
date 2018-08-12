@@ -15,33 +15,47 @@ Open brackets must be closed in the correct order.
 Note that an empty string is also considered valid.
 '''
 
+OPENING_BRACKETS = {"{", "[", "("}
+BRACKETS_MAP = {"]": "[", "}": "{", ")": "("}
+
 class Solution(object):
     def isValid(self, s):
         """
         :type s: str
         :rtype: bool
-        """
-        right = [')', ']', '}']
-        if s == '':
+        """  
+        '''
+        i = 0
+        length = len(s)
+        while i < length / 2:
+            s = s.replace('()', '').replace('[]', '').replace('{}', '')
+            if s == '':
+                return True
+            i += 1
+            
+        return False
+        '''
+        if not s:  # empty string is a valid string
             return True
-        elif s[0] in right:
-            return False
-        elif ')' not in s and ']' not in s and '}' not in s:
-            return False
-        else:
-            length = len(s)
-            print(length)
-            for i in range(length):
-                if s[i] in right:
-                    if s[i-1:i+1] not in ['()', '[]', '{}']:
+
+        if s[0] not in OPENING_BRACKETS:
+            return False  # early exit if string does not start with an opening bracket
+
+        stack = []
+        for index, bracket in enumerate(s):
+            if bracket in OPENING_BRACKETS:
+                stack.append(bracket)
+            else:
+                try:
+                    last_opening_bracket = stack.pop()
+                    if last_opening_bracket != BRACKETS_MAP[bracket]:  # last closing bracket does not match last opening bracket
                         return False
-                    else:
-                        print(s[i-1:i+1])
-                        s = s.strip(s[i-1:i+1])
-                        print(s)
-                        return self.isValid(s)
+                except IndexError:
+                    return False  # pop from an empty stack means the brackets are not balanced
 
-
+        return not stack  # if something left on stack, brackets are unbalanced
+        
+            
 
 
 solution = Solution()
